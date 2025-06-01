@@ -62,18 +62,18 @@ export default function Navigation() {
 
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden fixed inset-0 top-[72px] bg-cream-50/98 backdrop-blur-lg z-40">
-            <div className="container mx-auto px-4 py-8">
+          <div className="lg:hidden fixed inset-0 top-[72px] bg-cream-50 z-40 shadow-lg">
+            <div className="container mx-auto px-4 py-8 bg-cream-50 min-h-full">
               <div className="flex flex-col space-y-6">
                 {navItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={closeMobileMenu}
-                    className={`font-serif text-xl tracking-wide transition-all duration-300 py-3 border-b border-stone-200/50 ${
+                    className={`font-serif text-xl tracking-wide transition-all duration-300 py-4 px-2 border-b border-stone-200 ${
                       pathname === item.href 
-                        ? "text-bordeaux-700 font-medium border-bordeaux-300" 
-                        : "text-stone-700 hover:text-bordeaux-600 hover:border-bordeaux-200"
+                        ? "text-bordeaux-700 font-medium border-bordeaux-300 bg-sage-50/50" 
+                        : "text-stone-700 hover:text-bordeaux-600 hover:border-bordeaux-200 hover:bg-stone-50"
                     }`}
                   >
                     {item.label}

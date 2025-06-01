@@ -5,11 +5,11 @@ import PageLayout from "@/components/page-layout"
 
 export default function ThemePage() {
   const colorPalette = [
-    { name: "Crème", color: "bg-cream-200", description: "Élégance intemporelle" },
-    { name: "Sage", color: "bg-sage-400", description: "Noblesse naturelle" },
-    { name: "Bordeaux", color: "bg-bordeaux-600", description: "Raffinement discret" },
-    { name: "Pierre", color: "bg-stone-400", description: "Sophistication sobre" },
-    { name: "Marine", color: "bg-navy-700", description: "Distinction classique" },
+    { name: "Crème", colorClass: "bg-amber-200", description: "Élégance intemporelle" },
+    { name: "Sage", colorClass: "bg-emerald-500", description: "Noblesse naturelle" },
+    { name: "Bordeaux", colorClass: "bg-red-700", description: "Raffinement discret" },
+    { name: "Pierre", colorClass: "bg-stone-600", description: "Sophistication sobre" },
+    { name: "Marine", colorClass: "bg-slate-800", description: "Distinction classique" },
   ]
 
   return (
@@ -55,13 +55,13 @@ export default function ThemePage() {
           Palette de couleurs
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 max-w-4xl mx-auto">
-          {colorPalette.map((color, index) => (
+          {colorPalette.map((colorItem, index) => (
             <div key={index} className="text-center group">
               <div
-                className={`w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full ${color.color} shadow-lg mb-3 sm:mb-4 mx-auto elegant-hover luxury-card`}
+                className={`w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full shadow-lg mb-3 sm:mb-4 mx-auto elegant-hover border-2 border-stone-300 ${colorItem.colorClass}`}
               ></div>
-              <h3 className="font-serif font-medium text-stone-800 mb-1 text-sm sm:text-base">{color.name}</h3>
-              <p className="text-xs sm:text-sm text-stone-600 font-elegant italic">{color.description}</p>
+              <h3 className="font-serif font-medium text-stone-800 mb-1 text-sm sm:text-base">{colorItem.name}</h3>
+              <p className="text-xs sm:text-sm text-stone-600 font-elegant italic">{colorItem.description}</p>
             </div>
           ))}
         </div>
