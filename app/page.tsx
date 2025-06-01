@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Calendar, Utensils, Bed, Crown } from "lucide-react"
 import Navigation from "@/components/navigation"
+import { HERO_IMAGE_URL } from "@/lib/config"
 
 export default function HomePage() {
   const [timeLeft, setTimeLeft] = useState({
@@ -81,7 +82,7 @@ export default function HomePage() {
           {/* Hero Image */}
           <div className="max-w-5xl mx-auto rounded-lg overflow-hidden shadow-2xl elegant-border">
             <Image
-              src="/placeholder.svg?height=600&width=1200"
+              src={HERO_IMAGE_URL}
               alt="Andres & Iris"
               width={1200}
               height={600}
