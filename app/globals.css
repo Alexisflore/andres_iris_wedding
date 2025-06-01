@@ -67,6 +67,18 @@
     @apply bg-background text-foreground;
     background-image: radial-gradient(circle at 1px 1px, rgba(120, 113, 108, 0.15) 1px, transparent 0);
     background-size: 20px 20px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+  
+  html {
+    font-size: 16px;
+  }
+  
+  @media (max-width: 640px) {
+    html {
+      font-size: 14px;
+    }
   }
 }
 
@@ -160,12 +172,25 @@ html {
   box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
+/* Désactiver les effets de survol sur mobile */
+@media (hover: none) and (pointer: coarse) {
+  .elegant-hover:hover {
+    transform: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), inset 0 1px 0
+      rgba(255, 255, 255, 0.1);
+  }
+}
+
 /* Typography enhancements */
 .heading-primary {
   font-family: var(--font-playfair), serif;
   font-weight: 600;
   letter-spacing: 0.025em;
   line-height: 1.1;
+  @media (max-width: 640px) {
+    line-height: 1.2;
+    letter-spacing: 0.015em;
+  }
 }
 
 .heading-secondary {
@@ -173,6 +198,10 @@ html {
   font-weight: 500;
   letter-spacing: 0.015em;
   line-height: 1.2;
+  @media (max-width: 640px) {
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+  }
 }
 
 .body-elegant {
@@ -201,4 +230,40 @@ html {
 
 .rotate-y-180-base {
   transform: rotateY(180deg);
+}
+
+/* Améliorations pour mobile */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .luxury-card .lucide {
+    min-width: 1rem;
+    min-height: 1rem;
+  }
+  
+  p, li {
+    line-height: 1.6;
+  }
+  
+  .space-y-8 > * + * {
+    margin-top: 1.5rem;
+  }
+  
+  .space-y-12 > * + * {
+    margin-top: 2rem;
+  }
+}
+
+/* Améliorations pour les tablettes */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .space-y-8 > * + * {
+    margin-top: 2rem;
+  }
+  
+  .space-y-12 > * + * {
+    margin-top: 2.5rem;
+  }
 }
