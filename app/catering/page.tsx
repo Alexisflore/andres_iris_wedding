@@ -30,102 +30,45 @@ export default function CateringPage() {
       title="Restauration"
       subtitle="Un menu d'exception conçu par notre chef, dans la plus pure tradition de la gastronomie française, pour célébrer notre union avec raffinement."
     >
-      {/* Menu Display */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 sm:gap-8 mb-16 sm:mb-20">
-        <Card className="luxury-card border-0 shadow-lg elegant-hover">
-          <CardHeader className="text-center pb-3 sm:pb-4">
-            <CardTitle className="flex flex-col items-center text-stone-800 text-lg sm:text-xl lg:text-2xl font-display">
-              <ChefHat className="w-6 h-6 sm:w-8 sm:h-8 mb-2 sm:mb-3 text-sage-600" />
-              Cocktail d'accueil
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <ul className="space-y-2 sm:space-y-3 text-stone-700 font-elegant text-sm sm:text-base">
-              <li>• Verrines de saumon fumé d'Écosse</li>
-              <li>• Canapés au foie gras du Périgord</li>
-              <li>• Macarons salés aux herbes fines</li>
-              <li>• Tartines d'avocat et crevettes grises</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card className="luxury-card border-0 shadow-lg elegant-hover">
-          <CardHeader className="text-center pb-3 sm:pb-4">
-            <CardTitle className="flex flex-col items-center text-stone-800 text-lg sm:text-xl lg:text-2xl font-display">
-              <Wine className="w-6 h-6 sm:w-8 sm:h-8 mb-2 sm:mb-3 text-sage-600" />
-              Entrée
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <ul className="space-y-2 sm:space-y-3 text-stone-700 font-elegant text-sm sm:text-base">
-              <li>• Salade de homard breton</li>
-              <li>• Vinaigrette à la passion</li>
-              <li>• Mesclun de jeunes pousses</li>
-              <li>• Tuile de parmesan affiné</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card className="luxury-card border-0 shadow-lg elegant-hover">
-          <CardHeader className="text-center pb-3 sm:pb-4">
-            <CardTitle className="flex flex-col items-center text-stone-800 text-lg sm:text-xl lg:text-2xl font-display">
-              <Utensils className="w-6 h-6 sm:w-8 sm:h-8 mb-2 sm:mb-3 text-sage-600" />
-              Plat Principal
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <ul className="space-y-2 sm:space-y-3 text-stone-700 font-elegant text-sm sm:text-base">
-              <li>• Filet de bœuf Wellington</li>
-              <li>• Gratin dauphinois aux truffes</li>
-              <li>• Légumes de saison du potager</li>
-              <li>• Sauce au porto millésimé</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card className="luxury-card border-0 shadow-lg elegant-hover">
-          <CardHeader className="text-center pb-3 sm:pb-4">
-            <CardTitle className="flex flex-col items-center text-stone-800 text-lg sm:text-xl lg:text-2xl font-display">
-              <Cake className="w-6 h-6 sm:w-8 sm:h-8 mb-2 sm:mb-3 text-sage-600" />
-              Dessert
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <ul className="space-y-2 sm:space-y-3 text-stone-700 font-elegant text-sm sm:text-base">
-              <li>• Pièce montée traditionnelle</li>
-              <li>• Mignardises du pâtissier</li>
-              <li>• Fruits de saison confits</li>
-              <li>• Café gourmand et digestifs</li>
-            </ul>
-          </CardContent>
-        </Card>
+      {/* Message temporaire */}
+      <div className="text-center mb-16 sm:mb-20">
+        <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-sage-100 mb-4 sm:mb-6">
+          <ChefHat className="w-8 h-8 sm:w-10 sm:h-10 text-sage-600" />
+        </div>
+        <h3 className="text-2xl sm:text-3xl font-display text-stone-800 mb-3">
+          Découvrez bientôt notre menu d'exception
+        </h3>
+        <p className="text-stone-600 font-elegant text-base sm:text-lg max-w-2xl mx-auto">
+          Notre chef travaille actuellement sur un menu raffiné qui saura émerveiller vos papilles. 
+          Les détails seront dévoilés très prochainement.
+        </p>
       </div>
 
-      {/* Wine Pairing */}
+      {/* Wine Pairing - Caché */}
       <div className="mb-16 sm:mb-20">
-        <Card className="luxury-card border-0 shadow-lg max-w-4xl mx-auto">
+        <Card className="luxury-card border-0 shadow-lg max-w-4xl mx-auto opacity-20 pointer-events-none">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl sm:text-3xl font-display text-stone-800 heading-secondary">
-              Accord des vins
+            <CardTitle className="text-2xl sm:text-3xl font-display text-stone-800 heading-secondary blur-sm">
+              ●●●●● ●●● ●●●●
             </CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-stone-700 font-elegant leading-relaxed text-base sm:text-lg mb-4 sm:mb-6">
-              Notre sommelier a sélectionné des crus d'exception pour accompagner chaque service, privilégiant les
-              domaines familiaux et les millésimes de caractère.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-sm sm:text-base">
-              <div>
-                <h4 className="font-serif font-medium text-stone-800 mb-2">Champagne</h4>
-                <p className="text-stone-600 font-elegant">Bollinger Grande Cuvée</p>
-              </div>
-              <div>
-                <h4 className="font-serif font-medium text-stone-800 mb-2">Vin blanc</h4>
-                <p className="text-stone-600 font-elegant">Chablis Premier Cru 2020</p>
-              </div>
-              <div>
-                <h4 className="font-serif font-medium text-stone-800 mb-2">Vin rouge</h4>
-                <p className="text-stone-600 font-elegant">Châteauneuf-du-Pape 2018</p>
+            <div className="blur-sm">
+              <div className="h-4 bg-stone-300 rounded mb-4 mx-auto max-w-lg"></div>
+              <div className="h-3 bg-stone-300 rounded mb-6 mx-auto max-w-md"></div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                <div>
+                  <div className="h-4 bg-stone-400 rounded mb-2"></div>
+                  <div className="h-3 bg-stone-300 rounded"></div>
+                </div>
+                <div>
+                  <div className="h-4 bg-stone-400 rounded mb-2"></div>
+                  <div className="h-3 bg-stone-300 rounded"></div>
+                </div>
+                <div>
+                  <div className="h-4 bg-stone-400 rounded mb-2"></div>
+                  <div className="h-3 bg-stone-300 rounded"></div>
+                </div>
               </div>
             </div>
           </CardContent>
