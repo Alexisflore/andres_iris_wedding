@@ -3,45 +3,40 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapPin, Car, Train, Plane, Instagram } from "lucide-react"
 import Link from "next/link"
 import PageLayout from "@/components/page-layout"
+import { VENUE_IMAGES } from "@/lib/config"
 
 export default function VenuePage() {
   return (
     <PageLayout
       title="Les Tourelles de Fonville"
-      subtitle="Un château d'exception du XVIIe siècle, niché au cœur de la campagne française, où l'histoire et l'élégance se rencontrent pour célébrer notre union."
+      subtitle="Acienne ferme de caractère et d’exception, nichée au coeur de la campagne française, où l’histoire et l’élégance se rencontrent pour célébrer notre union"
     >
       {/* Venue Photos */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-16 sm:mb-20">
         <div className="lg:col-span-2">
-          <div className="luxury-card rounded-lg overflow-hidden shadow-xl">
+          <div className="luxury-card rounded-lg overflow-hidden shadow-xl elegant-hover group">
             <Image
-              src="/placeholder.svg?height=500&width=900"
+              src={VENUE_IMAGES.main}
               alt="Tourelles de Fonville - Vue principale"
               width={900}
               height={500}
-              className="w-full h-64 sm:h-80 lg:h-full object-cover"
+              className="w-full h-64 sm:h-80 lg:h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              priority
             />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 sm:gap-8">
-          <div className="luxury-card rounded-lg overflow-hidden shadow-lg">
-            <Image
-              src="/placeholder.svg?height=240&width=400"
-              alt="Tourelles de Fonville - Jardins"
-              width={400}
-              height={240}
-              className="w-full h-48 sm:h-60 object-cover"
-            />
-          </div>
-          <div className="luxury-card rounded-lg overflow-hidden shadow-lg">
-            <Image
-              src="/placeholder.svg?height=240&width=400"
-              alt="Tourelles de Fonville - Intérieur"
-              width={400}
-              height={240}
-              className="w-full h-48 sm:h-60 object-cover"
-            />
-          </div>
+          {VENUE_IMAGES.gallery.map((image, index) => (
+            <div key={index} className="luxury-card rounded-lg overflow-hidden shadow-lg elegant-hover group">
+              <Image
+                src={image}
+                alt={`Tourelles de Fonville - ${index === 0 ? 'Jardins' : 'Intérieur'}`}
+                width={400}
+                height={240}
+                className="w-full h-48 sm:h-60 object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            </div>
+          ))}
         </div>
       </div>
 
@@ -74,11 +69,11 @@ export default function VenuePage() {
 </div>
 
             <Link
-              href="https://instagram.com/tourellesdefonville"
+              href="https://instagram.com/lestourellesdefonville"
               className="inline-flex items-center text-sage-700 hover:text-bordeaux-600 transition-colors font-serif text-sm sm:text-base"
             >
               <Instagram className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-              @tourellesdefonville
+              @lestourellesdefonville
             </Link>
           </CardContent>
         </Card>

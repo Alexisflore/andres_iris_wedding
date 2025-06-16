@@ -6,7 +6,8 @@ import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Calendar, Utensils, Bed, Crown } from "lucide-react"
 import Navigation from "@/components/navigation"
-import { HERO_IMAGE_URL } from "@/lib/config"
+import HeroCarousel from "@/components/hero-carousel"
+import { HERO_IMAGES } from "@/lib/config"
 
 export default function HomePage() {
   const [timeLeft, setTimeLeft] = useState({
@@ -79,16 +80,8 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Hero Image */}
-          <div className="max-w-5xl mx-auto rounded-lg overflow-hidden shadow-2xl elegant-border">
-            <Image
-              src={HERO_IMAGE_URL}
-              alt="Andres & Iris"
-              width={1200}
-              height={600}
-              className="w-full h-auto"
-            />
-          </div>
+          {/* Hero Carousel */}
+          <HeroCarousel images={HERO_IMAGES} />
         </div>
       </section>
 

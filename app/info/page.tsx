@@ -32,17 +32,12 @@ export default function InfoPage() {
     {
       question: "À quelle heure convient-il d'arriver ?",
       answer:
-        "L'accueil des invités débute à 14h précises. Nous vous recommandons d'arriver entre 14h et 14h30 pour profiter pleinement du cocktail d'accueil.",
+        "L'accueil des invités débute à 17h. Nous vous recommandons d'arriver à 16h45",
     },
     {
       question: "Le stationnement est-il assuré ?",
       answer:
         "Quarante places de stationnement sont gracieusement mises à disposition sur le domaine, dans le respect de l'ordre d'arrivée.",
-    },
-    {
-      question: "Les enfants sont-ils les bienvenus ?",
-      answer:
-        "Les enfants sont naturellement conviés à cette célébration familiale. Merci de nous signaler leur présence lors de votre confirmation.",
     },
     {
       question: "Que prévoir en cas d'intempéries ?",
@@ -141,10 +136,13 @@ export default function InfoPage() {
                 </p>
                 <div className="space-y-2">
                   <p className="text-xl font-serif text-stone-800">
-                    <span className="text-stone-600">Andres :</span> 06.XX.XX.XX.XX
+                    <span className="text-stone-600">Vincent S. :</span> 06 13 95 02 45
                   </p>
                   <p className="text-xl font-serif text-stone-800">
-                    <span className="text-stone-600">Iris :</span> 06.XX.XX.XX.XX
+                    <span className="text-stone-600">Andrea E. :</span> 06 63 51 41 39
+                  </p>
+                  <p className="text-xl font-serif text-stone-800">
+                    <span className="text-stone-600">Camille R. :</span> 07 62 23 66 50
                   </p>
                 </div>
               </CardContent>

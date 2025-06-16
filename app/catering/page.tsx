@@ -157,28 +157,28 @@ export default function CateringPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                   <div className="space-y-3">
                     <Label htmlFor="name" className="font-serif text-stone-800 text-sm sm:text-base font-medium">
-                      Nom complet
-                    </Label>
-                    <Input
-                      id="name"
-                      name="name"
+                    Nom complet
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
                       className="elegant-border h-12 sm:h-14 bg-white/70 backdrop-blur-sm border-sage-200 focus:border-sage-400 focus:ring-sage-400/20 transition-all duration-300"
                       placeholder="Prénom Nom"
-                      required
-                    />
-                  </div>
+                    required
+                  />
+                </div>
                   <div className="space-y-3">
                     <Label htmlFor="email" className="font-serif text-stone-800 text-sm sm:text-base font-medium">
-                      Adresse électronique
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      name="email"
+                    Adresse électronique
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    name="email"
                       className="elegant-border h-12 sm:h-14 bg-white/70 backdrop-blur-sm border-sage-200 focus:border-sage-400 focus:ring-sage-400/20 transition-all duration-300"
                       placeholder="votre@email.fr"
-                      required
-                    />
+                    required
+                  />
                   </div>
                 </div>
               </div>
@@ -194,14 +194,14 @@ export default function CateringPage() {
                       <RadioGroupItem value="yes" id="yes" className="border-sage-300 text-sage-600" />
                       <Label htmlFor="yes" className="font-elegant text-stone-700 text-sm sm:text-base cursor-pointer flex-1 group-hover:text-sage-800 transition-colors">
                         ✨ Oui, j'aurai l'honneur d'être présent(e)
-                      </Label>
-                    </div>
+                    </Label>
+                  </div>
                     <div className="flex items-center space-x-4 p-4 rounded-lg bg-white/60 border border-sage-100 hover:bg-sage-50/60 transition-all duration-300 group">
                       <RadioGroupItem value="no" id="no" className="border-sage-300 text-sage-600" />
                       <Label htmlFor="no" className="font-elegant text-stone-700 text-sm sm:text-base cursor-pointer flex-1 group-hover:text-sage-800 transition-colors">
                         💔 Non, je ne pourrai malheureusement pas être présent(e)
-                      </Label>
-                    </div>
+                    </Label>
+                  </div>
                   </RadioGroup>
                 </div>
               </div>
@@ -213,18 +213,18 @@ export default function CateringPage() {
                 </h3>
                 <div className="bg-gradient-to-br from-cream-50/50 to-sage-50/50 p-6 sm:p-8 rounded-xl border border-sage-100">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-                    {allergyOptions.map((allergy) => (
+                  {allergyOptions.map((allergy) => (
                       <div key={allergy} className="flex items-center space-x-3 p-3 rounded-lg bg-white/60 border border-sage-100 hover:bg-sage-50/60 transition-all duration-300 group">
-                        <Checkbox
-                          id={allergy}
-                          onCheckedChange={(checked) => handleAllergyChange(allergy, checked as boolean)}
+                      <Checkbox
+                        id={allergy}
+                        onCheckedChange={(checked) => handleAllergyChange(allergy, checked as boolean)}
                           className="border-sage-300 data-[state=checked]:bg-sage-600"
-                        />
+                      />
                         <Label htmlFor={allergy} className="font-elegant text-stone-700 text-xs sm:text-sm cursor-pointer group-hover:text-sage-800 transition-colors">
-                          {allergy}
-                        </Label>
-                      </div>
-                    ))}
+                        {allergy}
+                      </Label>
+                    </div>
+                  ))}
                   </div>
                 </div>
               </div>
@@ -237,15 +237,15 @@ export default function CateringPage() {
                 <div className="space-y-4">
                   <div className="space-y-3">
                     <Label htmlFor="dietary" className="font-serif text-stone-800 text-sm sm:text-base font-medium">
-                      Régime alimentaire particulier
-                    </Label>
-                    <Textarea
-                      id="dietary"
-                      name="dietary"
-                      placeholder="Végétarien, végan, sans gluten, halal, casher..."
+                  Régime alimentaire particulier
+                </Label>
+                <Textarea
+                  id="dietary"
+                  name="dietary"
+                  placeholder="Végétarien, végan, sans gluten, halal, casher..."
                       className="elegant-border resize-none bg-white/70 backdrop-blur-sm border-sage-200 focus:border-sage-400 focus:ring-sage-400/20 transition-all duration-300 min-h-[80px]"
-                      rows={3}
-                    />
+                  rows={3}
+                />
                   </div>
                 </div>
               </div>
@@ -258,14 +258,14 @@ export default function CateringPage() {
                 <div className="space-y-3">
                   <Label htmlFor="message" className="font-serif text-stone-800 text-sm sm:text-base font-medium">
                     Vos souhaits pour cette journée (optionnel)
-                  </Label>
-                  <Textarea
-                    id="message"
-                    name="message"
+                </Label>
+                <Textarea
+                  id="message"
+                  name="message"
                     placeholder="Partagez vos souhaits particuliers pour cette journée magique..."
                     className="elegant-border resize-none bg-white/70 backdrop-blur-sm border-sage-200 focus:border-sage-400 focus:ring-sage-400/20 transition-all duration-300 min-h-[100px]"
-                    rows={4}
-                  />
+                  rows={4}
+                />
                 </div>
               </div>
 

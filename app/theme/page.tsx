@@ -2,12 +2,13 @@ import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Palette, Shirt, Gem } from "lucide-react"
 import PageLayout from "@/components/page-layout"
+import { STYLE_IMAGES } from "@/lib/config"
 
 export default function ThemePage() {
   const colorPalette = [
     { name: "Crème", colorClass: "bg-amber-200", description: "Élégance intemporelle" },
     { name: "Sage", colorClass: "bg-emerald-500", description: "Noblesse naturelle" },
-    { name: "Bordeaux", colorClass: "bg-red-700", description: "Raffinement discret" },
+    { name: "Bordeaux", colorClass: "bg-red-800", description: "Raffinement discret" },
     { name: "Pierre", colorClass: "bg-stone-600", description: "Sophistication sobre" },
     { name: "Marine", colorClass: "bg-slate-800", description: "Distinction classique" },
   ]
@@ -24,7 +25,7 @@ export default function ThemePage() {
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display text-stone-800 mb-4 sm:mb-6 heading-primary">
           Thème & Dress Code
         </h1>
-        <p className="text-xl sm:text-2xl text-bordeaux-700 font-serif italic mb-2 sm:mb-4">COMS</p>
+        <p className="text-xl sm:text-2xl text-bordeaux-800 font-serif italic mb-2 sm:mb-4">COMS</p>
         <p className="text-base sm:text-lg text-stone-600 font-elegant">Chic • Old-Money • Sprezzatura</p>
       </div>
 
@@ -70,22 +71,32 @@ export default function ThemePage() {
       {/* Dress Code */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 lg:gap-12">
         {/* Men's Dress Code */}
-        <Card className="luxury-card border-0 shadow-lg">
-          <CardHeader className="pb-4 sm:pb-6">
+        <Card className="luxury-card border-0 shadow-2xl bg-gradient-to-br from-white to-stone-50/30">
+          <CardHeader className="pb-4 sm:pb-6 border-b border-stone-200/50">
             <CardTitle className="flex items-center text-stone-800 text-2xl sm:text-3xl font-display heading-secondary">
               <Shirt className="w-6 h-6 sm:w-8 sm:h-8 mr-3 sm:mr-4 text-sage-600 flex-shrink-0" />
               Messieurs
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-6">
-            <div className="bg-sage-50 p-4 sm:p-6 rounded-lg elegant-border">
+          <CardContent className="space-y-6 sm:space-y-8 pt-6">
+            <div className="flex items-start space-x-3 sm:space-x-4">
+              <Gem className="w-5 h-5 sm:w-6 sm:h-6 text-sage-600 mt-1 flex-shrink-0" />
+              <div>
+                <h4 className="font-serif font-medium text-stone-800 text-lg sm:text-xl mb-3">Accessoires</h4>
+                <p className="text-stone-700 font-elegant leading-relaxed text-sm sm:text-base">
+                  Cravate en soie, pochette assortie, chaussures en cuir patiné, montre de famille si possible.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-amber-50/80 to-sage-50/60 p-5 sm:p-6 rounded-lg border border-amber-200/40 shadow-inner">
               <div className="flex items-start space-x-3 sm:space-x-4">
                 <Palette className="w-5 h-5 sm:w-6 sm:h-6 text-sage-600 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-serif font-medium text-stone-800 text-lg sm:text-xl mb-2">Recommandé</h4>
+                  <h4 className="font-serif font-medium text-stone-800 text-lg sm:text-xl mb-3">Nuances & Harmonie</h4>
                   <p className="text-stone-700 font-elegant leading-relaxed text-sm sm:text-base">
-                    Costume trois-pièces en laine fine, couleurs nobles : marine, gris anthracite, beige ou bordeaux
-                    discret.
+                    Votre tenue peut composer plusieurs couleurs de cette palette, ou même divers tons dérivés.
+                    L'art réside dans l'harmonie subtile des nuances.
                   </p>
                 </div>
               </div>
@@ -94,22 +105,21 @@ export default function ThemePage() {
             <div className="flex items-start space-x-3 sm:space-x-4">
               <Gem className="w-5 h-5 sm:w-6 sm:h-6 text-sage-600 mt-1 flex-shrink-0" />
               <div>
-                <h4 className="font-serif font-medium text-stone-800 text-lg sm:text-xl mb-2">Accessoires</h4>
+                <h4 className="font-serif font-medium text-stone-800 text-lg sm:text-xl mb-3">À éviter</h4>
                 <p className="text-stone-700 font-elegant leading-relaxed text-sm sm:text-base">
-                  Cravate en soie ou nœud papillon, pochette assortie, chaussures en cuir patiné, montre de famille
-                  si possible.
+                  Nœud papillon et costume noir, réservés au marié et aux garçons d'honneur.
                 </p>
               </div>
             </div>
 
-            <div className="mt-6 sm:mt-8">
-              <div className="luxury-card rounded-lg overflow-hidden shadow-lg">
+            <div className="mt-8">
+              <div className="luxury-card rounded-xl overflow-hidden shadow-lg border border-stone-200/60">
                 <Image
-                  src="/placeholder.svg?height=300&width=400"
-                  alt="Inspiration tenue masculine"
+                  src={STYLE_IMAGES.men}
+                  alt="Inspiration tenue masculine élégante"
                   width={400}
                   height={300}
-                  className="w-full h-48 sm:h-56 lg:h-64 object-cover"
+                  className="w-full h-56 sm:h-64 lg:h-80 object-cover object-center"
                 />
               </div>
             </div>
@@ -117,19 +127,19 @@ export default function ThemePage() {
         </Card>
 
         {/* Women's Dress Code */}
-        <Card className="luxury-card border-0 shadow-lg">
-          <CardHeader className="pb-4 sm:pb-6">
+        <Card className="luxury-card border-0 shadow-2xl bg-gradient-to-br from-white to-stone-50/30">
+          <CardHeader className="pb-4 sm:pb-6 border-b border-stone-200/50">
             <CardTitle className="flex items-center text-stone-800 text-2xl sm:text-3xl font-display heading-secondary">
               <Palette className="w-6 h-6 sm:w-8 sm:h-8 mr-3 sm:mr-4 text-sage-600 flex-shrink-0" />
               Mesdames
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-6">
-            <div className="bg-sage-50 p-4 sm:p-6 rounded-lg elegant-border">
+          <CardContent className="space-y-6 sm:space-y-8 pt-6">
+            <div className="bg-gradient-to-r from-sage-50/80 to-amber-50/60 p-5 sm:p-6 rounded-lg border border-sage-200/40 shadow-inner">
               <div className="flex items-start space-x-3 sm:space-x-4">
                 <Palette className="w-5 h-5 sm:w-6 sm:h-6 text-sage-600 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-serif font-medium text-stone-800 text-lg sm:text-xl mb-2">Recommandé</h4>
+                  <h4 className="font-serif font-medium text-stone-800 text-lg sm:text-xl mb-3">Recommandé</h4>
                   <p className="text-stone-700 font-elegant leading-relaxed text-sm sm:text-base">
                     Robe midi ou longue en matières nobles : soie, crêpe, dentelle fine ou tweed. Coupes
                     intemporelles et élégantes.
@@ -141,22 +151,21 @@ export default function ThemePage() {
             <div className="flex items-start space-x-3 sm:space-x-4">
               <Gem className="w-5 h-5 sm:w-6 sm:h-6 text-sage-600 mt-1 flex-shrink-0" />
               <div>
-                <h4 className="font-serif font-medium text-stone-800 text-lg sm:text-xl mb-2">À éviter</h4>
+                <h4 className="font-serif font-medium text-stone-800 text-lg sm:text-xl mb-3">À éviter</h4>
                 <p className="text-stone-700 font-elegant leading-relaxed text-sm sm:text-base">
-                  Blanc (réservé à la mariée), noir total, couleurs fluorescentes, décolletés trop prononcés,
-                  mini-robes.
+                  Blanc (réservé à la mariée), noir total, couleurs fluorescentes.
                 </p>
               </div>
             </div>
 
-            <div className="mt-6 sm:mt-8">
-              <div className="luxury-card rounded-lg overflow-hidden shadow-lg">
+            <div className="mt-8">
+              <div className="luxury-card rounded-xl overflow-hidden shadow-lg border border-stone-200/60">
                 <Image
-                  src="/placeholder.svg?height=300&width=400"
-                  alt="Inspiration tenue féminine"
+                  src={STYLE_IMAGES.women}
+                  alt="Inspiration tenue féminine élégante"
                   width={400}
                   height={300}
-                  className="w-full h-48 sm:h-56 lg:h-64 object-cover"
+                  className="w-full h-56 sm:h-64 lg:h-80 object-cover object-center"
                 />
               </div>
             </div>

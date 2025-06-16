@@ -33,8 +33,7 @@ export default async function AccommodationPage() {
             </div>
             <h1 className="text-6xl font-display text-stone-800 mb-6 heading-primary">Hébergement</h1>
             <p className="text-xl text-stone-600 max-w-4xl mx-auto font-elegant leading-relaxed">
-              Nous avons sélectionné avec soin des demeures de caractère et des établissements de qualité à proximité du
-              château, pour que votre séjour soit à la hauteur de cette célébration.
+            Nous avons sélectionné avec soin des établissements de qualité à proximité du domaine, pour que votre séjour soit à la hauteur de notre célébration
             </p>
             
             {/* Message de debug temporaire */}
