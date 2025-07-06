@@ -9,8 +9,8 @@ export async function submitRSVP(previousState: any, formData: FormData) {
   const attendance = formData.get("attendance") === "yes"
   const allergiesString = formData.get("allergies") as string
   const allergies = allergiesString ? allergiesString.split(",").map((a) => a.trim()) : []
-  const dietary_restrictions = formData.get("dietary_restrictions") as string
-  const additional_info = formData.get("additional_info") as string
+  const dietary_restrictions = formData.get("dietary") as string
+  const additional_info = formData.get("message") as string
 
   try {
     const { error } = await supabase.from("rsvps").insert({

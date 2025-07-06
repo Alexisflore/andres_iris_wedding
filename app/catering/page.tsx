@@ -169,6 +169,8 @@ export default function CateringPage() {
                     </div>
                   ))}
                   </div>
+                  {/* Hidden input to send allergies data */}
+                  <input type="hidden" name="allergies" value={allergies.join(",")} />
                 </div>
               </div>
 
