@@ -20,7 +20,7 @@ export default function HeroCarousel({ images }: HeroCarouselProps) {
 
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
-    }, 2000) // Change image every 4 seconds for more dynamic feel
+    }, 4000) // Change image every 4 seconds for more relaxed viewing
 
     return () => clearInterval(interval)
   }, [currentIndex, isAutoPlaying, images.length])
