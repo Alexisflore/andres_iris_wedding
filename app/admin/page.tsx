@@ -1,16 +1,64 @@
+"use client"
+
 import { getAllRSVPs, getAllBookings, getAdminStats } from "@/app/actions/admin"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Shield, Users, Calendar, MapPin, Mail, Phone, Crown, ChefHat, Utensils, CheckCircle, XCircle, AlertCircle } from "lucide-react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Shield, Users, Calendar, MapPin, Mail, Phone, Crown, ChefHat, Utensils, CheckCircle, XCircle, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react"
 import Navigation from "@/components/navigation"
+import { useState, useEffect } from "react"
 
-export default async function AdminPage() {
-  const [rsvpResult, bookingResult, statsResult] = await Promise.all([
-    getAllRSVPs(),
-    getAllBookings(),
-    getAdminStats()
-  ])
+// Composant pour la pagination
+function PaginationControls({ 
+  currentPage, 
+  totalPages, 
+  onPageChange 
+}: { 
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void 
+}) {
+  return (
+    <div className="flex items-center justify-between mt-6">
+      <div className="text-sm text-stone-600 font-elegant">
+        Page {currentPage} sur {totalPages}
+      </div>
+      <div className="flex items-center space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="font-serif"
+        >
+          <ChevronLeft className="w-4 h-4 mr-1" />
+          Précédent
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="font-serif"
+        >
+          Suivant
+          <ChevronRight className="w-4 h-4 ml-1" />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+// Composant client pour gérer la pagination des RSVP
+function RSVPTable({ rsvps }: { rsvps: any[] }) {
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+  const totalPages = Math.ceil(rsvps.length / itemsPerPage)
+  
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentRSVPs = rsvps.slice(startIndex, endIndex)
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -20,6 +68,199 @@ export default async function AdminPage() {
       hour: '2-digit',
       minute: '2-digit'
     })
+  }
+
+  return (
+    <div>
+      <div className="rounded-lg border-2 border-stone-200 overflow-hidden bg-white shadow-lg">
+        <Table>
+          <TableHeader className="bg-sage-50">
+            <TableRow>
+              <TableHead className="font-serif text-sage-800">Nom</TableHead>
+              <TableHead className="font-serif text-sage-800">Email</TableHead>
+              <TableHead className="font-serif text-sage-800">Statut</TableHead>
+              <TableHead className="font-serif text-sage-800">Allergies</TableHead>
+              <TableHead className="font-serif text-sage-800">Régime</TableHead>
+              <TableHead className="font-serif text-sage-800">Message</TableHead>
+              <TableHead className="font-serif text-sage-800">Date</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {currentRSVPs.map((rsvp: any) => (
+              <TableRow key={rsvp.id} className="hover:bg-stone-50">
+                <TableCell className="font-display text-stone-800">{rsvp.name}</TableCell>
+                <TableCell className="font-elegant text-stone-600">{rsvp.email}</TableCell>
+                <TableCell>
+                  <Badge variant={rsvp.attendance ? "default" : "secondary"} 
+                        className={`font-serif px-3 py-1 ${
+                          rsvp.attendance 
+                            ? 'bg-green-100 text-green-800 border-green-200' 
+                            : 'bg-red-100 text-red-800 border-red-200'
+                        }`}>
+                    {rsvp.attendance ? '✨ Présent' : '💔 Absent'}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {rsvp.allergies && rsvp.allergies.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                      {rsvp.allergies.map((allergy: string, index: number) => (
+                        <Badge key={index} variant="outline" className="text-xs bg-amber-100 border-amber-300 text-amber-800">
+                          {allergy}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-stone-400 font-elegant text-sm">Aucune</span>
+                  )}
+                </TableCell>
+                <TableCell className="font-elegant text-stone-600 text-sm max-w-32 truncate">
+                  {rsvp.dietary_restrictions || <span className="text-stone-400">Aucun</span>}
+                </TableCell>
+                <TableCell className="font-elegant text-stone-600 text-sm max-w-48 truncate">
+                  {rsvp.additional_info ? (
+                    <span className="italic">"{rsvp.additional_info}"</span>
+                  ) : (
+                    <span className="text-stone-400">Aucun</span>
+                  )}
+                </TableCell>
+                <TableCell className="font-elegant text-stone-500 text-sm">
+                  {formatDate(rsvp.created_at)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      
+      {totalPages > 1 && (
+        <PaginationControls 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
+    </div>
+  )
+}
+
+// Composant client pour gérer la pagination des réservations
+function BookingsTable({ bookings }: { bookings: any[] }) {
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+  const totalPages = Math.ceil(bookings.length / itemsPerPage)
+  
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentBookings = bookings.slice(startIndex, endIndex)
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  return (
+    <div>
+      <div className="rounded-lg border-2 border-amber-200 overflow-hidden bg-white shadow-lg">
+        <Table>
+          <TableHeader className="bg-amber-50">
+            <TableRow>
+              <TableHead className="font-serif text-amber-800">Nom</TableHead>
+              <TableHead className="font-serif text-amber-800">Email</TableHead>
+              <TableHead className="font-serif text-amber-800">Invités</TableHead>
+              <TableHead className="font-serif text-amber-800">Hébergement</TableHead>
+              <TableHead className="font-serif text-amber-800">Ville</TableHead>
+              <TableHead className="font-serif text-amber-800">Type</TableHead>
+              <TableHead className="font-serif text-amber-800">Date</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {currentBookings.map((booking: any) => (
+              <TableRow key={booking.id} className="hover:bg-amber-50/50">
+                <TableCell className="font-display text-stone-800">{booking.guest_name}</TableCell>
+                <TableCell className="font-elegant text-stone-600">{booking.guest_email}</TableCell>
+                <TableCell>
+                  <Badge className="bg-amber-100 text-amber-800 border-amber-200 font-serif px-3 py-1">
+                    {booking.guest_count} personne{booking.guest_count > 1 ? 's' : ''}
+                  </Badge>
+                </TableCell>
+                <TableCell className="font-display text-amber-900 font-medium">
+                  {booking.accommodations?.name || 'N/A'}
+                </TableCell>
+                <TableCell className="font-elegant text-amber-700">
+                  {booking.accommodations?.city || 'N/A'}
+                </TableCell>
+                <TableCell>
+                  {booking.accommodations?.type && (
+                    <Badge variant="outline" className="text-xs bg-amber-100 border-amber-300 text-amber-800">
+                      {booking.accommodations.type}
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell className="font-elegant text-stone-500 text-sm">
+                  {formatDate(booking.created_at)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      
+      {totalPages > 1 && (
+        <PaginationControls 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
+    </div>
+  )
+}
+
+export default function AdminPage() {
+  const [rsvpResult, setRsvpResult] = useState<any>({ success: false, data: [], error: null })
+  const [bookingResult, setBookingResult] = useState<any>({ success: false, data: [], error: null })
+  const [statsResult, setStatsResult] = useState<any>({ success: false, data: null, error: null })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [rsvp, booking, stats] = await Promise.all([
+          getAllRSVPs(),
+          getAllBookings(),
+          getAdminStats()
+        ])
+        
+        setRsvpResult(rsvp)
+        setBookingResult(booking)
+        setStatsResult(stats)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchData()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-cream-50 to-stone-50">
+        <Navigation />
+        <div className="pt-24 flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sage-600 mx-auto mb-4"></div>
+            <p className="text-stone-600 font-elegant">Chargement des données...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -89,72 +330,24 @@ export default async function AdminPage() {
             </div>
           )}
 
-          {/* Tabs-like sections */}
+          {/* Sections des tableaux */}
           <div className="space-y-16">
             {/* Section RSVP */}
             <div>
-              <div className="flex items-center mb-8">
-                <ChefHat className="w-6 h-6 text-sage-600 mr-4" />
-                <h2 className="text-3xl font-display text-stone-800 heading-secondary">Réponses RSVP</h2>
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center">
+                  <ChefHat className="w-6 h-6 text-sage-600 mr-4" />
+                  <h2 className="text-3xl font-display text-stone-800 heading-secondary">Réponses RSVP</h2>
+                </div>
+                {rsvpResult.success && (
+                  <Badge variant="outline" className="bg-sage-100 text-sage-800 border-sage-200 font-serif px-4 py-2">
+                    {rsvpResult.data.length} réponse{rsvpResult.data.length > 1 ? 's' : ''}
+                  </Badge>
+                )}
               </div>
               
               {rsvpResult.success ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {rsvpResult.data.map((rsvp: any) => (
-                    <Card key={rsvp.id} className="bg-gradient-to-br from-cream-50 via-stone-50 to-sage-50 border-2 border-stone-200/60 shadow-lg hover:shadow-xl transition-all duration-300">
-                      <CardHeader className="pb-4">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-lg font-display text-stone-800 flex items-center">
-                            <Utensils className="w-4 h-4 mr-2 text-sage-600" />
-                            {rsvp.name}
-                          </CardTitle>
-                          <Badge variant={rsvp.attendance ? "default" : "secondary"} 
-                                className={`font-serif px-3 py-1 ${
-                                  rsvp.attendance 
-                                    ? 'bg-green-100 text-green-800 border-green-200' 
-                                    : 'bg-red-100 text-red-800 border-red-200'
-                                }`}>
-                            {rsvp.attendance ? '✨ Présent' : '💔 Absent'}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-stone-600 font-elegant">{formatDate(rsvp.created_at)}</p>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="flex items-center text-stone-700">
-                          <Mail className="w-4 h-4 mr-3 text-sage-600" />
-                          <span className="font-elegant text-sm">{rsvp.email}</span>
-                        </div>
-                        
-                        {rsvp.allergies && rsvp.allergies.length > 0 && (
-                          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                            <h4 className="font-serif text-amber-800 text-sm font-medium mb-2">Allergies</h4>
-                            <div className="flex flex-wrap gap-2">
-                              {rsvp.allergies.map((allergy: string, index: number) => (
-                                <Badge key={index} variant="outline" className="text-xs bg-amber-100 border-amber-300 text-amber-800">
-                                  {allergy}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {rsvp.dietary_restrictions && (
-                          <div className="bg-sage-50 border border-sage-200 rounded-lg p-3">
-                            <h4 className="font-serif text-sage-800 text-sm font-medium mb-2">Régime alimentaire</h4>
-                            <p className="text-sm text-sage-700 font-elegant">{rsvp.dietary_restrictions}</p>
-                          </div>
-                        )}
-                        
-                        {rsvp.additional_info && (
-                          <div className="bg-stone-50 border border-stone-200 rounded-lg p-3">
-                            <h4 className="font-serif text-stone-800 text-sm font-medium mb-2">Message personnel</h4>
-                            <p className="text-sm text-stone-700 font-elegant italic">"{rsvp.additional_info}"</p>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                <RSVPTable rsvps={rsvpResult.data} />
               ) : (
                 <Card className="bg-red-50 border-2 border-red-200 shadow-lg">
                   <CardContent className="flex items-center justify-center p-8">
@@ -170,52 +363,20 @@ export default async function AdminPage() {
 
             {/* Section Hébergements */}
             <div>
-              <div className="flex items-center mb-8">
-                <Crown className="w-6 h-6 text-amber-600 mr-4" />
-                <h2 className="text-3xl font-display text-stone-800 heading-secondary">Réservations d'hébergement</h2>
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center">
+                  <Crown className="w-6 h-6 text-amber-600 mr-4" />
+                  <h2 className="text-3xl font-display text-stone-800 heading-secondary">Réservations d'hébergement</h2>
+                </div>
+                {bookingResult.success && (
+                  <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200 font-serif px-4 py-2">
+                    {bookingResult.data.length} réservation{bookingResult.data.length > 1 ? 's' : ''}
+                  </Badge>
+                )}
               </div>
               
               {bookingResult.success ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {bookingResult.data.map((booking: any) => (
-                    <Card key={booking.id} className="bg-gradient-to-br from-cream-50 via-amber-50 to-stone-50 border-2 border-amber-200/60 shadow-lg hover:shadow-xl transition-all duration-300">
-                      <CardHeader className="pb-4">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-lg font-display text-stone-800 flex items-center">
-                            <Crown className="w-4 h-4 mr-2 text-amber-600" />
-                            {booking.guest_name}
-                          </CardTitle>
-                          <Badge className="bg-amber-100 text-amber-800 border-amber-200 font-serif px-3 py-1">
-                            {booking.guest_count} personne{booking.guest_count > 1 ? 's' : ''}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-stone-600 font-elegant">{formatDate(booking.created_at)}</p>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="flex items-center text-stone-700">
-                          <Mail className="w-4 h-4 mr-3 text-amber-600" />
-                          <span className="font-elegant text-sm">{booking.guest_email}</span>
-                        </div>
-                        
-                        {booking.accommodations && (
-                          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                            <h4 className="font-serif text-amber-800 text-sm font-medium mb-2 flex items-center">
-                              <MapPin className="w-4 h-4 mr-2" />
-                              Hébergement réservé
-                            </h4>
-                            <div className="space-y-2">
-                              <p className="font-display text-amber-900 font-medium">{booking.accommodations.name}</p>
-                              <p className="text-sm text-amber-700 font-elegant">{booking.accommodations.city}</p>
-                              <Badge variant="outline" className="text-xs bg-amber-100 border-amber-300 text-amber-800">
-                                {booking.accommodations.type}
-                              </Badge>
-                            </div>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                <BookingsTable bookings={bookingResult.data} />
               ) : (
                 <Card className="bg-red-50 border-2 border-red-200 shadow-lg">
                   <CardContent className="flex items-center justify-center p-8">
