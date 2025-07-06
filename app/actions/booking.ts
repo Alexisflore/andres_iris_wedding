@@ -10,10 +10,30 @@ export async function createBooking(
   guestCount: number,
 ) {
   try {
-    // First, check if there's enough availability
+    // Vérifier si l'email existe déjà dans les réservations
+    const { data: existingBooking, error: checkError } = await supabase
+      .from("bookings")
+      .select(`
+        *,
+        accommodations (
+          name,
+          city,
+          type
+        )
+      `)
+      .eq("guest_email", guestEmail)
+      .single()
+
+    if (checkError && checkError.code !== "PGRST116") {
+      // PGRST116 = no rows returned, ce qui est normal si l'email n'existe pas
+      console.error("Error checking existing booking:", checkError)
+      return { success: false, message: "Erreur lors de la vérification. Veuillez réessayer." }
+    }
+
+    // Vérifier la capacité totale et les réservations existantes pour cet hébergement
     const { data: accommodation, error: fetchError } = await supabase
       .from("accommodations")
-      .select("available, capacity")
+      .select("capacity")
       .eq("id", accommodationId)
       .single()
 
@@ -21,11 +41,42 @@ export async function createBooking(
       return { success: false, message: "Hébergement non trouvé." }
     }
 
-    if (accommodation.available < guestCount) {
-      return { success: false, message: "Pas assez de places disponibles." }
+    // Calculer les réservations existantes pour cet hébergement
+    const { data: existingBookings, error: bookingsError } = await supabase
+      .from("bookings")
+      .select("guest_count")
+      .eq("accommodation_id", accommodationId)
+
+    if (bookingsError) {
+      console.error("Error fetching existing bookings:", bookingsError)
+      return { success: false, message: "Erreur lors de la vérification de la disponibilité." }
     }
 
-    // Create the booking
+    // Calculer le total des réservations existantes
+    const totalBooked = existingBookings?.reduce((total, booking) => total + booking.guest_count, 0) || 0
+    const available = accommodation.capacity - totalBooked
+
+    if (available < guestCount) {
+      return { success: false, message: `Pas assez de places disponibles. Il reste ${available} place(s) disponible(s).` }
+    }
+
+    // Si l'email existe déjà, retourner une réponse spéciale pour déclencher la modal
+    if (existingBooking) {
+      return {
+        success: false,
+        needsConfirmation: true,
+        existingBooking,
+        newData: {
+          accommodationId,
+          guestName,
+          guestEmail,
+          guestCount,
+        },
+        message: `Une réservation existe déjà pour l'adresse ${guestEmail}. Souhaitez-vous la modifier ou ajouter une nouvelle réservation ?`
+      }
+    }
+
+    // Créer la réservation
     const { error: bookingError } = await supabase.from("bookings").insert({
       accommodation_id: accommodationId,
       guest_name: guestName,
@@ -38,22 +89,136 @@ export async function createBooking(
       return { success: false, message: "Erreur lors de la réservation." }
     }
 
-    // Update availability
-    const { error: updateError } = await supabase
+    revalidatePath("/accommodation")
+    return { success: true, message: `Réservation confirmée pour ${guestCount} personne(s) !` }
+  } catch (error) {
+    console.error("Unexpected error:", error)
+    return { success: false, message: "Une erreur inattendue s'est produite." }
+  }
+}
+
+export async function updateBooking(bookingId: string, newData: any) {
+  try {
+    // Vérifier la capacité pour le nouvel hébergement
+    const { data: accommodation, error: fetchError } = await supabase
       .from("accommodations")
+      .select("capacity")
+      .eq("id", newData.accommodationId)
+      .single()
+
+    if (fetchError || !accommodation) {
+      return { success: false, message: "Hébergement non trouvé." }
+    }
+
+    // Récupérer la réservation existante pour connaître l'ancien nombre de personnes
+    const { data: currentBooking, error: currentError } = await supabase
+      .from("bookings")
+      .select("guest_count, accommodation_id")
+      .eq("id", bookingId)
+      .single()
+
+    if (currentError || !currentBooking) {
+      return { success: false, message: "Réservation introuvable." }
+    }
+
+    // Calculer les réservations existantes pour le nouvel hébergement
+    const { data: existingBookings, error: bookingsError } = await supabase
+      .from("bookings")
+      .select("guest_count")
+      .eq("accommodation_id", newData.accommodationId)
+      .neq("id", bookingId) // Exclure la réservation actuelle
+
+    if (bookingsError) {
+      console.error("Error fetching existing bookings:", bookingsError)
+      return { success: false, message: "Erreur lors de la vérification de la disponibilité." }
+    }
+
+    // Calculer le total des réservations existantes
+    const totalBooked = existingBookings?.reduce((total, booking) => total + booking.guest_count, 0) || 0
+    const available = accommodation.capacity - totalBooked
+
+    if (available < newData.guestCount) {
+      return { success: false, message: `Pas assez de places disponibles. Il reste ${available} place(s) disponible(s).` }
+    }
+
+    // Mettre à jour la réservation
+    const { error: updateError } = await supabase
+      .from("bookings")
       .update({
-        available: accommodation.available - guestCount,
-        updated_at: new Date().toISOString(),
+        accommodation_id: newData.accommodationId,
+        guest_name: newData.guestName,
+        guest_count: newData.guestCount,
       })
-      .eq("id", accommodationId)
+      .eq("id", bookingId)
 
     if (updateError) {
-      console.error("Error updating availability:", updateError)
-      return { success: false, message: "Erreur lors de la mise à jour de la disponibilité." }
+      console.error("Error updating booking:", updateError)
+      return { success: false, message: "Erreur lors de la mise à jour. Veuillez réessayer." }
     }
 
     revalidatePath("/accommodation")
-    return { success: true, message: `Réservation confirmée pour ${guestCount} personne(s) !` }
+    return {
+      success: true,
+      message: "Votre réservation a été mise à jour avec succès !",
+    }
+  } catch (error) {
+    console.error("Unexpected error:", error)
+    return { success: false, message: "Une erreur inattendue s'est produite." }
+  }
+}
+
+export async function forceCreateBooking(
+  accommodationId: string,
+  guestName: string,
+  guestEmail: string,
+  guestCount: number,
+) {
+  try {
+    // Vérifier la capacité totale et les réservations existantes pour cet hébergement
+    const { data: accommodation, error: fetchError } = await supabase
+      .from("accommodations")
+      .select("capacity")
+      .eq("id", accommodationId)
+      .single()
+
+    if (fetchError || !accommodation) {
+      return { success: false, message: "Hébergement non trouvé." }
+    }
+
+    // Calculer les réservations existantes pour cet hébergement
+    const { data: existingBookings, error: bookingsError } = await supabase
+      .from("bookings")
+      .select("guest_count")
+      .eq("accommodation_id", accommodationId)
+
+    if (bookingsError) {
+      console.error("Error fetching existing bookings:", bookingsError)
+      return { success: false, message: "Erreur lors de la vérification de la disponibilité." }
+    }
+
+    // Calculer le total des réservations existantes
+    const totalBooked = existingBookings?.reduce((total, booking) => total + booking.guest_count, 0) || 0
+    const available = accommodation.capacity - totalBooked
+
+    if (available < guestCount) {
+      return { success: false, message: `Pas assez de places disponibles. Il reste ${available} place(s) disponible(s).` }
+    }
+
+    // Créer la nouvelle réservation (en forçant même si l'email existe déjà)
+    const { error: bookingError } = await supabase.from("bookings").insert({
+      accommodation_id: accommodationId,
+      guest_name: guestName,
+      guest_email: guestEmail,
+      guest_count: guestCount,
+    })
+
+    if (bookingError) {
+      console.error("Error creating booking:", bookingError)
+      return { success: false, message: "Erreur lors de la réservation." }
+    }
+
+    revalidatePath("/accommodation")
+    return { success: true, message: `Nouvelle réservation confirmée pour ${guestCount} personne(s) !` }
   } catch (error) {
     console.error("Unexpected error:", error)
     return { success: false, message: "Une erreur inattendue s'est produite." }
@@ -64,72 +229,56 @@ export async function getAccommodations() {
   try {
     console.log("🔍 Fetching accommodations from Supabase...")
     
-    // Test de connexion Supabase
-    console.log("🔗 Testing Supabase connection...")
-    console.log("📋 Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + "...")
-    console.log("🔑 Supabase Key:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 20) + "...")
-    
-    // Vérifier les tables disponibles via une requête de test
-    console.log("🏗️ Testing table access...")
-    const testQuery = await supabase.from("accommodations").select("count", { count: "exact", head: true })
-    console.log("📊 Table access test result:", testQuery)
-    
-    if (testQuery.error) {
-      console.error("❌ Error accessing accommodations table:", testQuery.error)
-      console.error("❌ Error details:", JSON.stringify(testQuery.error, null, 2))
-    } else {
-      console.log("✅ Table accessible, count:", testQuery.count)
-    }
-    
-    // Essayer de lister toutes les tables disponibles (peut échouer selon les permissions)
-    console.log("📋 Attempting to list available tables...")
-    try {
-      const tablesQuery = await supabase.rpc('get_table_names')
-      console.log("📋 Available tables:", tablesQuery)
-    } catch (tableError) {
-      console.log("⚠️ Cannot list tables (normal if RPC not available):", tableError)
-    }
-    
-    // Requête principale
-    console.log("🔄 Executing main query...")
-    const { data, error } = await supabase.from("accommodations").select("*").order("distance")
+    // Récupérer les hébergements
+    const { data: accommodations, error } = await supabase
+      .from("accommodations")
+      .select("*")
+      .order("distance")
 
     if (error) {
       console.error("❌ Error fetching accommodations:", error)
-      console.error("❌ Error message:", error.message)
-      console.error("❌ Error details:", error.details)
-      console.error("❌ Error hint:", error.hint)
-      console.error("❌ Error code:", error.code)
       return []
     }
 
-    console.log("✅ Accommodations fetched successfully:", data)
-    console.log("📊 Number of accommodations:", data ? data.length : 0)
-    
-    // Log détaillé de chaque accommodation si des données existent
-    if (data && data.length > 0) {
-      console.log("🏠 Accommodation details:")
-      data.forEach((acc, index) => {
-        console.log(`  ${index + 1}. ${acc.name} (${acc.available}/${acc.capacity}) - ${acc.city}`)
-      })
-    } else {
-      console.log("❌ No accommodations found in the response")
-      
-      // Test avec une requête plus simple
-      console.log("🔄 Trying simplified query...")
-      const simpleQuery = await supabase.from("accommodations").select("id, name")
-      console.log("🔍 Simple query result:", simpleQuery)
-      
-      // Test avec un select count
-      console.log("🔄 Trying count query...")
-      const countQuery = await supabase.from("accommodations").select("*", { count: "exact" })
-      console.log("🔢 Count query result:", countQuery)
+    if (!accommodations || accommodations.length === 0) {
+      console.log("❌ No accommodations found")
+      return []
     }
 
-    return data || []
+    // Récupérer toutes les réservations pour calculer la disponibilité
+    const { data: bookings, error: bookingsError } = await supabase
+      .from("bookings")
+      .select("accommodation_id, guest_count")
+
+    if (bookingsError) {
+      console.error("❌ Error fetching bookings:", bookingsError)
+      // Retourner les accommodations sans mise à jour de disponibilité
+      return accommodations
+    }
+
+    // Calculer la disponibilité pour chaque hébergement
+    const accommodationsWithAvailability = accommodations.map(accommodation => {
+      // Calculer le total des réservations pour cet hébergement
+      const totalBooked = bookings
+        ?.filter(booking => booking.accommodation_id === accommodation.id)
+        ?.reduce((total, booking) => total + booking.guest_count, 0) || 0
+
+      // Calculer la disponibilité
+      const available = Math.max(0, accommodation.capacity - totalBooked)
+
+      console.log(`🏠 ${accommodation.name}: ${available}/${accommodation.capacity} disponible (${totalBooked} réservé)`)
+
+      return {
+        ...accommodation,
+        available
+      }
+    })
+
+    console.log("✅ Accommodations with calculated availability:", accommodationsWithAvailability.length)
+    
+    return accommodationsWithAvailability
   } catch (error) {
     console.error("💥 Unexpected error:", error)
-    console.error("💥 Error stack:", error instanceof Error ? error.stack : "No stack available")
     return []
   }
 }
@@ -142,7 +291,6 @@ export async function testAccommodationInsert() {
     const testAccommodation = {
       name: "Test Hotel",
       capacity: 4,
-      available: 4,
       address: "123 Test Street",
       city: "Test City",
       phone: "+33123456789",

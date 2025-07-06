@@ -57,10 +57,15 @@ export async function getAdminStats() {
     // Récupérer les statistiques des réservations
     const { data: bookingStats, error: bookingError } = await supabase
       .from("bookings")
-      .select("guest_count")
+      .select("guest_count, accommodation_id")
 
-    if (rsvpError || bookingError) {
-      console.error("Error fetching stats:", rsvpError || bookingError)
+    // Récupérer les hébergements pour calculer la disponibilité
+    const { data: accommodations, error: accommodationError } = await supabase
+      .from("accommodations")
+      .select("id, name, capacity")
+
+    if (rsvpError || bookingError || accommodationError) {
+      console.error("Error fetching stats:", rsvpError || bookingError || accommodationError)
       return { success: false, data: null, error: "Erreur lors de la récupération des statistiques" }
     }
 
@@ -70,6 +75,10 @@ export async function getAdminStats() {
 
     const totalBookings = bookingStats?.length || 0
     const totalGuests = bookingStats?.reduce((sum, booking) => sum + (booking.guest_count || 0), 0) || 0
+
+    // Calculer la disponibilité des hébergements
+    const totalCapacity = accommodations?.reduce((sum, acc) => sum + acc.capacity, 0) || 0
+    const totalAvailable = totalCapacity - totalGuests
 
     return {
       success: true,
@@ -82,6 +91,11 @@ export async function getAdminStats() {
         bookings: {
           total: totalBookings,
           guests: totalGuests
+        },
+        accommodations: {
+          totalCapacity,
+          totalAvailable,
+          occupancyRate: totalCapacity > 0 ? Math.round((totalGuests / totalCapacity) * 100) : 0
         }
       },
       error: null

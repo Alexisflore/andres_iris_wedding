@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { createBooking } from "@/app/actions/booking"
+import { createBooking, updateBooking, forceCreateBooking } from "@/app/actions/booking"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -117,14 +117,145 @@ function ConfirmationModal({
   )
 }
 
+// Modal de confirmation pour booking existant
+function BookingConfirmationModal({
+  isOpen,
+  onClose,
+  existingBooking,
+  newData,
+  onUpdate,
+  onAddNew,
+  message,
+  isLoading,
+  accommodations
+}: {
+  isOpen: boolean
+  onClose: () => void
+  existingBooking: any
+  newData: any
+  onUpdate: () => void
+  onAddNew: () => void
+  message: string
+  isLoading: boolean
+  accommodations: Accommodation[]
+}) {
+  if (!isOpen) return null
+
+  const currentAccommodation = accommodations.find(acc => acc.id === existingBooking?.accommodation_id)
+  const newAccommodation = accommodations.find(acc => acc.id === newData?.accommodationId)
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Overlay */}
+      <div 
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+        onClick={onClose}
+      />
+      
+      {/* Modal */}
+      <div className="relative bg-gradient-to-br from-cream-50 via-stone-50 to-amber-50 border-2 border-stone-200/60 shadow-2xl rounded-2xl p-8 max-w-lg w-full mx-4 transform transition-all duration-300 scale-100 animate-in fade-in-0 zoom-in-95">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          disabled={isLoading}
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center transition-colors duration-200 group disabled:opacity-50"
+        >
+          <X className="w-4 h-4 text-stone-600 group-hover:text-stone-800" />
+        </button>
+
+        {/* Decorative border */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-300/80 to-transparent rounded-t-2xl"></div>
+
+        {/* Icon */}
+        <div className="flex justify-center mb-6">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center bg-gradient-to-r from-amber-100 to-orange-100 shadow-lg">
+            <Crown className="w-8 h-8 text-amber-600" />
+          </div>
+        </div>
+
+        {/* Title */}
+        <h3 className="text-2xl font-display text-stone-800 text-center mb-4 heading-secondary">
+          Réservation existante
+        </h3>
+
+        {/* Message */}
+        <p className="text-stone-700 text-center mb-6 font-elegant leading-relaxed">
+          {message}
+        </p>
+
+        {/* Comparaison des données */}
+        <div className="bg-white/70 rounded-lg p-4 mb-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="font-serif text-stone-800 font-semibold mb-2">Réservation actuelle :</p>
+              <p className="text-stone-600">{existingBooking?.guest_name}</p>
+              <p className="text-stone-600">{existingBooking?.guest_count} personne(s)</p>
+              <p className="text-stone-600 text-xs text-amber-700">{currentAccommodation?.name}</p>
+            </div>
+            <div>
+              <p className="font-serif text-stone-800 font-semibold mb-2">Nouvelle réservation :</p>
+              <p className="text-stone-600">{newData?.guestName}</p>
+              <p className="text-stone-600">{newData?.guestCount} personne(s)</p>
+              <p className="text-stone-600 text-xs text-amber-700">{newAccommodation?.name}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Buttons */}
+        <div className="space-y-3">
+          <Button
+            onClick={onUpdate}
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-sage-700 to-sage-800 hover:from-sage-800 hover:to-sage-900 text-cream-50 font-serif py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50"
+          >
+            {isLoading ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 border-2 border-cream-50/30 border-t-cream-50 rounded-full animate-spin"></div>
+                <span>Modification...</span>
+              </div>
+            ) : (
+              "Modifier la réservation existante"
+            )}
+          </Button>
+          
+          <Button
+            onClick={onAddNew}
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-amber-700 to-amber-800 hover:from-amber-800 hover:to-amber-900 text-cream-50 font-serif py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50"
+          >
+            {isLoading ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 border-2 border-cream-50/30 border-t-cream-50 rounded-full animate-spin"></div>
+                <span>Ajout...</span>
+              </div>
+            ) : (
+              "Ajouter une nouvelle réservation"
+            )}
+          </Button>
+          
+          <Button
+            onClick={onClose}
+            disabled={isLoading}
+            variant="outline"
+            className="w-full border-2 border-stone-300/60 bg-white/80 text-stone-700 hover:bg-stone-50 hover:border-stone-400/60 font-serif py-4 rounded-lg transition-all duration-300 shadow-sm hover:shadow-lg disabled:opacity-50"
+          >
+            Annuler
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function BookingClient({ accommodations }: { accommodations: Accommodation[] }) {
   const [selectedAccommodation, setSelectedAccommodation] = useState<string | null>(null)
   const [guestCount, setGuestCount] = useState(1)
   const [guestName, setGuestName] = useState("")
   const [guestEmail, setGuestEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
   
-  // État pour le modal
+  // État pour le modal de résultat
   const [modal, setModal] = useState<{
     isOpen: boolean
     message: string
@@ -135,6 +266,19 @@ export default function BookingClient({ accommodations }: { accommodations: Acco
     message: "",
     isSuccess: false,
     accommodationName: undefined
+  })
+
+  // État pour le modal de confirmation
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean
+    existingBooking: any
+    newData: any
+    message: string
+  }>({
+    isOpen: false,
+    existingBooking: null,
+    newData: null,
+    message: ""
   })
 
   const handleReservation = async (accommodationId: string) => {
@@ -150,20 +294,31 @@ export default function BookingClient({ accommodations }: { accommodations: Acco
     setIsSubmitting(true)
     const result = await createBooking(accommodationId, guestName, guestEmail, guestCount)
     
-    const accommodation = accommodations.find(acc => acc.id === accommodationId)
-    
-    setModal({
-      isOpen: true,
-      message: result.message,
-      isSuccess: result.success,
-      accommodationName: result.success ? accommodation?.name : undefined
-    })
+    if (result.needsConfirmation) {
+      // Afficher la modal de confirmation
+      setConfirmModal({
+        isOpen: true,
+        existingBooking: result.existingBooking,
+        newData: result.newData,
+        message: result.message
+      })
+    } else {
+      // Afficher la modal de résultat
+      const accommodation = accommodations.find(acc => acc.id === accommodationId)
+      
+      setModal({
+        isOpen: true,
+        message: result.message,
+        isSuccess: result.success,
+        accommodationName: result.success ? accommodation?.name : undefined
+      })
 
-    if (result.success) {
-      setSelectedAccommodation(null)
-      setGuestCount(1)
-      setGuestName("")
-      setGuestEmail("")
+      if (result.success) {
+        setSelectedAccommodation(null)
+        setGuestCount(1)
+        setGuestName("")
+        setGuestEmail("")
+      }
     }
     setIsSubmitting(false)
   }
@@ -172,9 +327,105 @@ export default function BookingClient({ accommodations }: { accommodations: Acco
     setModal({ isOpen: false, message: "", isSuccess: false, accommodationName: undefined })
   }
 
+  const closeConfirmModal = () => {
+    setConfirmModal({ isOpen: false, existingBooking: null, newData: null, message: "" })
+  }
+
+  const handleUpdateBooking = async () => {
+    setIsUpdating(true)
+    
+    try {
+      const result = await updateBooking(confirmModal.existingBooking.id, confirmModal.newData)
+      
+      // Fermer la modal de confirmation
+      setConfirmModal({ isOpen: false, existingBooking: null, newData: null, message: "" })
+      
+      // Afficher la modal de résultat
+      const accommodation = accommodations.find(acc => acc.id === confirmModal.newData.accommodationId)
+      
+      setModal({
+        isOpen: true,
+        message: result.message,
+        isSuccess: result.success,
+        accommodationName: result.success ? accommodation?.name : undefined
+      })
+
+      if (result.success) {
+        setSelectedAccommodation(null)
+        setGuestCount(1)
+        setGuestName("")
+        setGuestEmail("")
+      }
+    } catch (error) {
+      console.error("Error updating booking:", error)
+      setModal({
+        isOpen: true,
+        message: "Une erreur inattendue s'est produite.",
+        isSuccess: false
+      })
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  const handleAddNewBooking = async () => {
+    setIsUpdating(true)
+    
+    try {
+      const result = await forceCreateBooking(
+        confirmModal.newData.accommodationId,
+        confirmModal.newData.guestName,
+        confirmModal.newData.guestEmail,
+        confirmModal.newData.guestCount
+      )
+      
+      // Fermer la modal de confirmation
+      setConfirmModal({ isOpen: false, existingBooking: null, newData: null, message: "" })
+      
+      // Afficher la modal de résultat
+      const accommodation = accommodations.find(acc => acc.id === confirmModal.newData.accommodationId)
+      
+      setModal({
+        isOpen: true,
+        message: result.message,
+        isSuccess: result.success,
+        accommodationName: result.success ? accommodation?.name : undefined
+      })
+
+      if (result.success) {
+        setSelectedAccommodation(null)
+        setGuestCount(1)
+        setGuestName("")
+        setGuestEmail("")
+      }
+    } catch (error) {
+      console.error("Error adding new booking:", error)
+      setModal({
+        isOpen: true,
+        message: "Une erreur inattendue s'est produite.",
+        isSuccess: false
+      })
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
   return (
     <>
-      {/* Modal de confirmation */}
+      {/* Modal de confirmation pour booking existant */}
+      <BookingConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={closeConfirmModal}
+        existingBooking={confirmModal.existingBooking}
+        newData={confirmModal.newData}
+        message={confirmModal.message}
+        onUpdate={handleUpdateBooking}
+        onAddNew={handleAddNewBooking}
+        isLoading={isUpdating}
+        accommodations={accommodations}
+      />
+
+      {/* Modal de résultat */}
       <ConfirmationModal
         isOpen={modal.isOpen}
         onClose={closeModal}

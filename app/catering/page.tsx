@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Utensils, Wine, Cake, ChefHat, CheckCircle, XCircle, X } from "lucide-react"
-import { submitRSVP } from "@/app/actions/rsvp"
+import { submitRSVP, updateRSVP } from "@/app/actions/rsvp"
 import { useActionState } from "react"
 import PageLayout from "@/components/page-layout"
 
@@ -115,11 +115,117 @@ function CateringModal({
   )
 }
 
+// Modal de confirmation pour RSVP existant
+function RSVPConfirmationModal({
+  isOpen,
+  onClose,
+  existingRSVP,
+  newData,
+  onConfirm,
+  message,
+  isLoading
+}: {
+  isOpen: boolean
+  onClose: () => void
+  existingRSVP: any
+  newData: any
+  onConfirm: () => void
+  message: string
+  isLoading: boolean
+}) {
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Overlay */}
+      <div 
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+        onClick={onClose}
+      />
+      
+      {/* Modal */}
+      <div className="relative bg-gradient-to-br from-cream-50 via-stone-50 to-sage-50 border-2 border-stone-200/60 shadow-2xl rounded-2xl p-8 max-w-lg w-full mx-4 transform transition-all duration-300 scale-100 animate-in fade-in-0 zoom-in-95">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          disabled={isLoading}
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center transition-colors duration-200 group disabled:opacity-50"
+        >
+          <X className="w-4 h-4 text-stone-600 group-hover:text-stone-800" />
+        </button>
+
+        {/* Decorative border */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-sage-300/80 to-transparent rounded-t-2xl"></div>
+
+        {/* Icon */}
+        <div className="flex justify-center mb-6">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center bg-gradient-to-r from-sage-100 to-sage-200 shadow-lg">
+            <ChefHat className="w-8 h-8 text-sage-600" />
+          </div>
+        </div>
+
+        {/* Title */}
+        <h3 className="text-2xl font-display text-stone-800 text-center mb-4 heading-secondary">
+          Réponse existante
+        </h3>
+
+        {/* Message */}
+        <p className="text-stone-700 text-center mb-6 font-elegant leading-relaxed">
+          {message}
+        </p>
+
+        {/* Comparaison des données */}
+        <div className="bg-white/70 rounded-lg p-4 mb-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="font-serif text-stone-800 font-semibold mb-2">Réponse actuelle :</p>
+              <p className="text-stone-600">{existingRSVP?.name}</p>
+              <p className="text-stone-600">{existingRSVP?.attendance ? '✨ Présent' : '💔 Absent'}</p>
+            </div>
+            <div>
+              <p className="font-serif text-stone-800 font-semibold mb-2">Nouvelle réponse :</p>
+              <p className="text-stone-600">{newData?.name}</p>
+              <p className="text-stone-600">{newData?.attendance ? '✨ Présent' : '💔 Absent'}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Buttons */}
+        <div className="flex gap-4">
+          <Button
+            onClick={onConfirm}
+            disabled={isLoading}
+            className="flex-1 bg-gradient-to-r from-sage-700 to-sage-800 hover:from-sage-800 hover:to-sage-900 text-cream-50 font-serif py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50"
+          >
+            {isLoading ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 border-2 border-cream-50/30 border-t-cream-50 rounded-full animate-spin"></div>
+                <span>Modification...</span>
+              </div>
+            ) : (
+              "Oui, modifier"
+            )}
+          </Button>
+          <Button
+            onClick={onClose}
+            disabled={isLoading}
+            variant="outline"
+            className="flex-1 border-2 border-stone-300/60 bg-white/80 text-stone-700 hover:bg-stone-50 hover:border-stone-400/60 font-serif py-4 rounded-lg transition-all duration-300 shadow-sm hover:shadow-lg disabled:opacity-50"
+          >
+            Annuler
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function CateringPage() {
   const [allergies, setAllergies] = useState<string[]>([])
   const [state, action, isPending] = useActionState(submitRSVP, null)
+  const [isUpdating, setIsUpdating] = useState(false)
   
-  // État pour le modal
+  // État pour le modal de résultat
   const [modal, setModal] = useState<{
     isOpen: boolean
     message: string
@@ -130,14 +236,38 @@ export default function CateringPage() {
     isSuccess: false
   })
 
+  // État pour le modal de confirmation
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean
+    existingRSVP: any
+    newData: any
+    message: string
+  }>({
+    isOpen: false,
+    existingRSVP: null,
+    newData: null,
+    message: ""
+  })
+
   // Afficher le modal quand une réponse arrive
   useEffect(() => {
-    if (state?.success !== undefined) {
-      setModal({
-        isOpen: true,
-        message: state.message,
-        isSuccess: state.success
-      })
+    if (state) {
+      if (state.needsConfirmation) {
+        // Afficher la modal de confirmation
+        setConfirmModal({
+          isOpen: true,
+          existingRSVP: state.existingRSVP,
+          newData: state.newData,
+          message: state.message
+        })
+      } else if (state.success !== undefined) {
+        // Afficher la modal de résultat
+        setModal({
+          isOpen: true,
+          message: state.message,
+          isSuccess: state.success
+        })
+      }
     }
   }, [state])
 
@@ -153,9 +283,51 @@ export default function CateringPage() {
     setModal({ isOpen: false, message: "", isSuccess: false })
   }
 
+  const closeConfirmModal = () => {
+    setConfirmModal({ isOpen: false, existingRSVP: null, newData: null, message: "" })
+  }
+
+  const handleConfirmUpdate = async () => {
+    setIsUpdating(true)
+    
+    try {
+      const result = await updateRSVP(confirmModal.existingRSVP.id, confirmModal.newData)
+      
+      // Fermer la modal de confirmation
+      setConfirmModal({ isOpen: false, existingRSVP: null, newData: null, message: "" })
+      
+      // Afficher la modal de résultat
+      setModal({
+        isOpen: true,
+        message: result.message,
+        isSuccess: result.success
+      })
+    } catch (error) {
+      console.error("Error updating RSVP:", error)
+      setModal({
+        isOpen: true,
+        message: "Une erreur inattendue s'est produite.",
+        isSuccess: false
+      })
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
   return (
     <>
-      {/* Modal de confirmation */}
+      {/* Modal de confirmation de mise à jour */}
+      <RSVPConfirmationModal
+        isOpen={confirmModal.isOpen}
+        onClose={closeConfirmModal}
+        existingRSVP={confirmModal.existingRSVP}
+        newData={confirmModal.newData}
+        message={confirmModal.message}
+        onConfirm={handleConfirmUpdate}
+        isLoading={isUpdating}
+      />
+
+      {/* Modal de résultat */}
       <CateringModal
         isOpen={modal.isOpen}
         onClose={closeModal}
