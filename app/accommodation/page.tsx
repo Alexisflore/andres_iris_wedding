@@ -33,7 +33,7 @@ export default async function AccommodationPage() {
             </div>
             <h1 className="text-6xl font-display text-stone-800 mb-6 heading-primary">Hébergement</h1>
             <p className="text-xl text-stone-600 max-w-4xl mx-auto font-elegant leading-relaxed">
-              <span className="bg-yellow-200"> Cette page n'est pas une page de réservation </span>
+              <strong><span className="text-red-500">Cette page n'est pas une page de réservation</span></strong>
             <br />
               Vous devrez contacter directement les établissements pour effectuer vos réservations.
               <br />
