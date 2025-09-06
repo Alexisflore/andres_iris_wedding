@@ -33,8 +33,19 @@ export default async function AccommodationPage() {
             </div>
             <h1 className="text-6xl font-display text-stone-800 mb-6 heading-primary">Hébergement</h1>
             <p className="text-xl text-stone-600 max-w-4xl mx-auto font-elegant leading-relaxed">
-            Nous avons sélectionné avec soin des établissements de qualité à proximité du domaine, pour que votre séjour soit à la hauteur de notre célébration
+              <span className="bg-yellow-200"> Cette page n'est pas une page de réservation </span>
+            <br />
+              Vous devrez contacter directement les établissements pour effectuer vos réservations.
+              <br />
+               Nous avons sélectionné avec soin des établissements de qualité à proximité du domaine pour vous présenter différentes possibilités de logement. 
             </p>
+            <div className="mt-8 p-6 bg-sage-50 border border-sage-200 rounded-lg max-w-3xl mx-auto">
+              <p className="text-lg text-stone-700 font-elegant">
+                💡 <strong>Avez-vous déjà réservé ?</strong><br/>
+                Si vous avez réservé l'un de ces logements, nous vous serions très reconnaissants de nous l'indiquer 
+                afin d'en informer les autres invités.
+              </p>
+            </div>
             
             {/* Message de debug temporaire */}
             {accommodations.length === 0 && (

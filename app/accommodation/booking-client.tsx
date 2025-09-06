@@ -76,7 +76,7 @@ function ConfirmationModal({
 
         {/* Title */}
         <h3 className="text-2xl font-display text-stone-800 text-center mb-4 heading-secondary">
-          {isSuccess ? 'Réservation confirmée !' : 'Erreur de réservation'}
+          {isSuccess ? 'Information enregistrée !' : 'Erreur d\'enregistrement'}
         </h3>
 
         {/* Message */}
@@ -175,7 +175,7 @@ function BookingConfirmationModal({
 
         {/* Title */}
         <h3 className="text-2xl font-display text-stone-800 text-center mb-4 heading-secondary">
-          Réservation existante
+          Information existante
         </h3>
 
         {/* Message */}
@@ -187,13 +187,13 @@ function BookingConfirmationModal({
         <div className="bg-white/70 rounded-lg p-4 mb-6 space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="font-serif text-stone-800 font-semibold mb-2">Réservation actuelle :</p>
+              <p className="font-serif text-stone-800 font-semibold mb-2">Information actuelle :</p>
               <p className="text-stone-600">{existingBooking?.guest_name}</p>
               <p className="text-stone-600">{existingBooking?.guest_count} personne(s)</p>
               <p className="text-stone-600 text-xs text-amber-700">{currentAccommodation?.name}</p>
             </div>
             <div>
-              <p className="font-serif text-stone-800 font-semibold mb-2">Nouvelle réservation :</p>
+              <p className="font-serif text-stone-800 font-semibold mb-2">Nouvelle information :</p>
               <p className="text-stone-600">{newData?.guestName}</p>
               <p className="text-stone-600">{newData?.guestCount} personne(s)</p>
               <p className="text-stone-600 text-xs text-amber-700">{newAccommodation?.name}</p>
@@ -214,7 +214,7 @@ function BookingConfirmationModal({
                 <span>Modification...</span>
               </div>
             ) : (
-              "Modifier la réservation existante"
+              "Modifier l'information existante"
             )}
           </Button>
           
@@ -229,7 +229,7 @@ function BookingConfirmationModal({
                 <span>Ajout...</span>
               </div>
             ) : (
-              "Ajouter une nouvelle réservation"
+              "Ajouter une nouvelle information"
             )}
           </Button>
           
@@ -527,7 +527,7 @@ export default function BookingClient({ accommodations }: { accommodations: Acco
                       >
                         <div className="flex items-center justify-center space-x-2">
                           <Crown className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
-                          <span>Réserver ce logement</span>
+                          <span>J'ai réservé ici</span>
                         </div>
                       </Button>
                     ) : (
@@ -552,8 +552,8 @@ export default function BookingClient({ accommodations }: { accommodations: Acco
                 
                 <CardHeader className="pb-4">
                   <div className="text-center">
-                    <CardTitle className="text-stone-800 font-display text-lg mb-1">Réservation</CardTitle>
-                    <p className="font-elegant text-sm text-stone-600 italic">Veuillez remplir vos informations</p>
+                    <CardTitle className="text-stone-800 font-display text-lg mb-1">Indiquer ma réservation</CardTitle>
+                    <p className="font-elegant text-sm text-stone-600 italic">Informez-nous de votre réservation</p>
                   </div>
                 </CardHeader>
                 
@@ -619,7 +619,7 @@ export default function BookingClient({ accommodations }: { accommodations: Acco
                       {isSubmitting ? (
                         <div className="flex items-center space-x-2">
                           <div className="w-4 h-4 border-2 border-cream-50/30 border-t-cream-50 rounded-full animate-spin"></div>
-                          <span>Réservation...</span>
+                          <span>Enregistrement...</span>
                         </div>
                       ) : (
                         "Confirmer"

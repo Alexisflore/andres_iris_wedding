@@ -72,7 +72,7 @@ export async function createBooking(
           guestEmail,
           guestCount,
         },
-        message: `Une réservation existe déjà pour l'adresse ${guestEmail}. Souhaitez-vous la modifier ou ajouter une nouvelle réservation ?`
+        message: `Une information existe déjà pour l'adresse ${guestEmail}. Souhaitez-vous la modifier ou ajouter une nouvelle information ?`
       }
     }
 
@@ -86,11 +86,11 @@ export async function createBooking(
 
     if (bookingError) {
       console.error("Error creating booking:", bookingError)
-      return { success: false, message: "Erreur lors de la réservation." }
+      return { success: false, message: "Erreur lors de l'enregistrement." }
     }
 
     revalidatePath("/accommodation")
-    return { success: true, message: `Réservation confirmée pour ${guestCount} personne(s) !` }
+    return { success: true, message: `Merci de nous avoir prévenu de votre réservation !` }
   } catch (error) {
     console.error("Unexpected error:", error)
     return { success: false, message: "Une erreur inattendue s'est produite." }
@@ -118,7 +118,7 @@ export async function updateBooking(bookingId: string, newData: any) {
       .single()
 
     if (currentError || !currentBooking) {
-      return { success: false, message: "Réservation introuvable." }
+      return { success: false, message: "Information introuvable." }
     }
 
     // Calculer les réservations existantes pour le nouvel hébergement
@@ -159,7 +159,7 @@ export async function updateBooking(bookingId: string, newData: any) {
     revalidatePath("/accommodation")
     return {
       success: true,
-      message: "Votre réservation a été mise à jour avec succès !",
+      message: "Votre information a été mise à jour avec succès ! Merci de nous avoir prévenu.",
     }
   } catch (error) {
     console.error("Unexpected error:", error)
@@ -214,11 +214,11 @@ export async function forceCreateBooking(
 
     if (bookingError) {
       console.error("Error creating booking:", bookingError)
-      return { success: false, message: "Erreur lors de la réservation." }
+      return { success: false, message: "Erreur lors de l'enregistrement." }
     }
 
     revalidatePath("/accommodation")
-    return { success: true, message: `Nouvelle réservation confirmée pour ${guestCount} personne(s) !` }
+    return { success: true, message: `Merci de nous avoir prévenu de votre réservation de ${guestCount} personne(s) !` }
   } catch (error) {
     console.error("Unexpected error:", error)
     return { success: false, message: "Une erreur inattendue s'est produite." }
