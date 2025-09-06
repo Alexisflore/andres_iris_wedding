@@ -33,7 +33,7 @@ export default async function AccommodationPage() {
             </div>
             <h1 className="text-6xl font-display text-stone-800 mb-6 heading-primary">Hébergement</h1>
             <p className="text-xl text-stone-600 max-w-4xl mx-auto font-elegant leading-relaxed">
-              <strong><span className="text-red-500">Cette page n'est pas une page de réservation</span></strong>
+              <span className="bg-yellow-200 px-2 py-1 rounded">Cette page n'est pas une page de réservation</span>
             <br />
               Vous devrez contacter directement les établissements pour effectuer vos réservations.
               <br />
@@ -43,7 +43,7 @@ export default async function AccommodationPage() {
               <p className="text-lg text-stone-700 font-elegant">
                 💡 <strong>Avez-vous déjà réservé ?</strong><br/>
                 Si vous avez réservé l'un de ces logements, nous vous serions très reconnaissants de nous l'indiquer 
-                afin d'en informer les autres invités.
+                en utilisant l'espace dédié ci-dessous afin d'en informer les autres invités (en cliquant sur le bouton "J'ai réservé ici").
               </p>
             </div>
             
