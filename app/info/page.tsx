@@ -32,7 +32,7 @@ export default function InfoPage() {
     {
       question: "À quelle heure convient-il d'arriver ?",
       answer:
-        "L'accueil des invités débute à 17h. Nous vous recommandons d'arriver à 16h45",
+        "L'accueil des invités débute à 16h. Nous vous recommandons d'arriver à 15h45",
     },
     {
       question: "Le stationnement est-il assuré ?",

@@ -5,13 +5,13 @@ import PageLayout from "@/components/page-layout"
 export default function ProgramPage() {
   const schedule = [
     {
-      time: "17h00",
+      time: "16h00",
       title: "Accueil des invités",
       description: "Cocktail de bienvenue dans les jardins du domaine",
       icon: Users,
     },
     {
-      time: "17h20",
+      time: "16h30",
       title: "Cérémonie laïque",
       description: "Échange des vœux dans la roseraie",
       icon: Heart,
