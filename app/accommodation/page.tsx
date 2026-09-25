@@ -3,6 +3,9 @@ import { Crown } from "lucide-react"
 import BookingClient from "./booking-client"
 import Navigation from "@/components/navigation"
 
+// Toujours récupérer les données à la requête (sinon la page est figée au moment du build)
+export const dynamic = "force-dynamic"
+
 // Server Component (can call Server Actions during initial render)
 export default async function AccommodationPage() {
   // Test des permissions d'insertion
